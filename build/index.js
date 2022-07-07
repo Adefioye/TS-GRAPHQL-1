@@ -1,30 +1,40 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const body_parser_1 = __importDefault(require("body-parser"));
-const listings_1 = require("./listings");
-const app = (0, express_1.default)();
-const PORT = 5000;
-app.use(body_parser_1.default.urlencoded({ extended: true }));
-app.use(body_parser_1.default.json());
-app.get("/", (req, res) => {
-    res.send("Welcome Zagazaga");
-});
-app.get("/listings", (req, res) => {
-    res.send(listings_1.listings);
-});
-app.post("/delete-listing", (req, res) => {
-    const { id } = req.body;
-    for (let i = 0; i < listings_1.listings.length; i++) {
-        if (listings_1.listings[i].id === id) {
-            return res.send(listings_1.listings[i]);
-        }
-    }
-    return res.send(`Listings with ID ${id} not found`);
-});
-app.listen(PORT, () => {
-    console.log(`App listening on PORT: ${PORT}`);
-});
+const apollo_server_express_1 = require("apollo-server-express");
+const typeDefs_1 = require("./graphql/typeDefs");
+const resolvers_1 = require("./graphql/resolvers");
+const database_1 = require("./database");
+// import { typeDefs, resolvers } from "./graphql";
+// PWD: CPYQcNPph7MnCQoy
+function startApolloServer(app) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const PORT = 5000;
+        const db = yield (0, database_1.connectDatabase)();
+        const server = new apollo_server_express_1.ApolloServer({
+            typeDefs: typeDefs_1.typeDefs,
+            resolvers: resolvers_1.resolvers,
+            context: () => ({ db }),
+        });
+        yield server.start();
+        server.applyMiddleware({ app, path: "/api" });
+        app.listen(PORT, () => {
+            console.log(`App listening on PORT: ${PORT}`);
+        });
+        const listings = yield db.listings.find({}).toArray();
+        console.log(listings);
+    });
+}
+startApolloServer((0, express_1.default)());

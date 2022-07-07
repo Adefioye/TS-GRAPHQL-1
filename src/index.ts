@@ -1,35 +1,29 @@
-import express from "express";
-import bodyParser from "body-parser";
+import express, { Application } from "express";
+import { ApolloServer } from "apollo-server-express";
+import { typeDefs } from "./graphql/typeDefs";
+import { resolvers } from "./graphql/resolvers";
+import { connectDatabase } from "./database";
+// import { typeDefs, resolvers } from "./graphql";
 
-import { listings } from "./listings";
+// PWD: CPYQcNPph7MnCQoy
+async function startApolloServer(app: Application) {
+  const PORT = 5000;
+  const db = await connectDatabase();
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: () => ({ db }),
+  });
 
-const app = express();
+  await server.start();
+  server.applyMiddleware({ app, path: "/api" });
 
-const PORT = 5000;
+  app.listen(PORT, () => {
+    console.log(`App listening on PORT: ${PORT}`);
+  });
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+  const listings = await db.listings.find({}).toArray();
+  console.log(listings);
+}
 
-app.get("/", (req, res) => {
-  res.send("Welcome Zagazaga");
-});
-
-app.get("/listings", (req, res) => {
-  res.send(listings);
-});
-
-app.post("/delete-listing", (req, res) => {
-  const { id } = req.body;
-
-  for (let i = 0; i < listings.length; i++) {
-    if (listings[i].id === id) {
-      return res.send(listings[i]);
-    }
-  }
-
-  return res.send(`Listings with ID ${id} not found`);
-});
-
-app.listen(PORT, () => {
-  console.log(`App listening on PORT: ${PORT}`);
-});
+startApolloServer(express());
