@@ -24,9 +24,6 @@ async function startApolloServer(app: Application) {
   app.listen(PORT, () => {
     console.log(`App listening on PORT: ${PORT}`);
   });
-
-  const listings = await db.listings.find({}).toArray();
-  console.log(listings);
 }
 
 startApolloServer(express());

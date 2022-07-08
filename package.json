@@ -6,7 +6,11 @@
   "scripts": {
     "start:build": "tsc -w",
     "start:parcel": "nodemon ./build/index.js",
+    "seed": "ts-node ./src/temp/seed.ts",
     "start": "concurrently npm:start:*"
+  },
+  "scriptsComments": {
+    "seed": "Use -- --import flag to load seed data, and -- --delete flag to delete seed data"
   },
   "keywords": [],
   "author": "",
