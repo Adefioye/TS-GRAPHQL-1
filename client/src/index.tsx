@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { Listing } from "./sections";
+import { Listings } from "./sections";
 
 ReactDOM.render(
-  <Listing title="Tiny House" />,
+  <Listings title="Tiny House" />,
   document.getElementById("root")
 );
 // "module": "esnext",

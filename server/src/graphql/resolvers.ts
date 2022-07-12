@@ -10,6 +10,7 @@ export const resolvers = {
       args: {},
       { db }: { db: Database }
     ): Promise<Listing[]> => {
+      throw new Error("Error!");
       return await db.listings.find({}).toArray();
     },
   },
