@@ -1,5 +1,5 @@
 import React from "react";
-import { server, useQuery } from "../../lib/api";
+import { useQuery, useMutation } from "../../lib/api";
 import {
   ListingsData,
   DeleteListingData,
@@ -36,17 +36,27 @@ interface Props {
 }
 
 export const Listings = ({ title }: Props) => {
-  const { data, loading, refetch } = useQuery<ListingsData>(FETCH_LISTINGS);
+  const { data, loading, error, refetch } =
+    useQuery<ListingsData>(FETCH_LISTINGS);
   const listings = data ? data.listings : null;
 
-  const deleteListing = async (id: string) => {
-    await server.fetch<DeleteListingData, DeleteListingVariable>({
-      query: DELETE_LISTING,
-      variables: { id },
-    });
+  const [
+    deleteListing,
+    { loading: deleteListingLoading, error: deleteListingError },
+  ] = useMutation<DeleteListingData, DeleteListingVariable>(DELETE_LISTING);
 
+  const handleDeleteListing = async (id: string) => {
+    await deleteListing({ id });
     refetch();
   };
+
+  const deleteListingLoadingMessage = deleteListingLoading ? (
+    <h3>Deletion of a listing in progress</h3>
+  ) : null;
+
+  const deleteListingErrorMessage = deleteListingError ? (
+    <h3>Uh Oh! Something went wrong - Please try again :( </h3>
+  ) : null;
 
   const renderListing = () => {
     return (
@@ -56,7 +66,7 @@ export const Listings = ({ title }: Props) => {
             return (
               <li key={listing.id}>
                 {listing.title}
-                <button onClick={() => deleteListing(listing.id)}>
+                <button onClick={() => handleDeleteListing(listing.id)}>
                   Delete listing
                 </button>
               </li>
@@ -69,10 +79,16 @@ export const Listings = ({ title }: Props) => {
   if (loading) {
     return <h3>Loading...</h3>;
   }
+
+  if (error) {
+    return <h3>Uh Oh! Something went wrong - Please try again :( </h3>;
+  }
   return (
     <div>
       <h3>{title}</h3>
       {renderListing()}
+      {deleteListingLoadingMessage}
+      {deleteListingErrorMessage}
     </div>
   );
 };
