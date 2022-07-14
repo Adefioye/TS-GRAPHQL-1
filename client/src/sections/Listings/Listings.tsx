@@ -1,34 +1,34 @@
 import React from "react";
-import { useQuery, useMutation } from "../../lib/api";
+// import { useQuery, useMutation } from "../../lib/api";
+import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   ListingsData,
   DeleteListingData,
   DeleteListingVariable,
 } from "./types";
 
-const FETCH_LISTINGS = `
-query Listings {
+const FETCH_LISTINGS = gql`
+  query Listings {
     listings {
-        id
-        title
-        image 
-        address
-        price 
-        numOfGuests
-        numOfBeds 
-        numOfBaths
-        rating
+      id
+      title
+      image
+      address
+      price
+      numOfGuests
+      numOfBeds
+      numOfBaths
+      rating
     }
-}
+  }
 `;
 
-const DELETE_LISTING = `
+const DELETE_LISTING = gql`
   mutation DeleteListing($id: ID!) {
     deleteListing(id: $id) {
       id
     }
   }
-
 `;
 
 interface Props {
@@ -36,8 +36,7 @@ interface Props {
 }
 
 export const Listings = ({ title }: Props) => {
-  const { data, loading, error, refetch } =
-    useQuery<ListingsData>(FETCH_LISTINGS);
+  const { data, loading, error } = useQuery<ListingsData>(FETCH_LISTINGS);
   const listings = data ? data.listings : null;
 
   const [
@@ -46,8 +45,10 @@ export const Listings = ({ title }: Props) => {
   ] = useMutation<DeleteListingData, DeleteListingVariable>(DELETE_LISTING);
 
   const handleDeleteListing = async (id: string) => {
-    await deleteListing({ id });
-    refetch();
+    await deleteListing({
+      variables: { id },
+      refetchQueries: [FETCH_LISTINGS],
+    });
   };
 
   const deleteListingLoadingMessage = deleteListingLoading ? (

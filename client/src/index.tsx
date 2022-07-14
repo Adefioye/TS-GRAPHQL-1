@@ -1,10 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 
 import { Listings } from "./sections";
 
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  uri: "/api",
+});
+
 ReactDOM.render(
-  <Listings title="Tiny House" />,
+  <ApolloProvider client={client}>
+    <Listings title="Tiny House" />
+  </ApolloProvider>,
   document.getElementById("root")
 );
 // "module": "esnext",
