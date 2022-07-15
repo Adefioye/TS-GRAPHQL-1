@@ -1,7 +1,7 @@
-import { ObjectId, Collection } from "mongodb";
+import { Types } from "mongoose";
 
-export interface Listing {
-  _id: ObjectId;
+export interface ListingType {
+  _id: Types.ObjectId;
   title: string;
   image: string;
   address: string;
@@ -10,8 +10,4 @@ export interface Listing {
   numOfBeds: number;
   numOfBaths: number;
   rating: number;
-}
-
-export interface Database {
-  listings: Collection<Listing>;
 }

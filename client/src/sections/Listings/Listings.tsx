@@ -1,6 +1,7 @@
 import React from "react";
 // import { useQuery, useMutation } from "../../lib/api";
 import { useQuery, useMutation, gql } from "@apollo/client";
+
 import {
   ListingsData,
   DeleteListingData,
@@ -59,7 +60,7 @@ export const Listings = ({ title }: Props) => {
     <h3>Uh Oh! Something went wrong - Please try again :( </h3>
   ) : null;
 
-  const renderListing = () => {
+  const renderListings = () => {
     return (
       <ul>
         {listings &&
@@ -76,6 +77,32 @@ export const Listings = ({ title }: Props) => {
       </ul>
     );
   };
+  // const renderListings = () => {
+  //   return (
+  //     <List
+  //       itemLayout="horizontal"
+  //       dataSource={listings}
+  //       renderItem={(listing) => (
+  //         <List.Item
+  //           actions={[
+  //             <Button
+  //               type="primary"
+  //               onClick={() => handleDeleteListing(listing.id)}
+  //             >
+  //               Delete
+  //             </Button>,
+  //           ]}
+  //         >
+  //           <List.Item.Meta
+  //             title={listing.title}
+  //             description={listing.address}
+  //             avatar={<Avatar src={listing.image} shape="square" size={48} />}
+  //           />
+  //         </List.Item>
+  //       )}
+  //     />
+  //   );
+  // };
 
   if (loading) {
     return <h3>Loading...</h3>;
@@ -85,9 +112,9 @@ export const Listings = ({ title }: Props) => {
     return <h3>Uh Oh! Something went wrong - Please try again :( </h3>;
   }
   return (
-    <div>
+    <div className="listings">
       <h3>{title}</h3>
-      {renderListing()}
+      {renderListings()}
       {deleteListingLoadingMessage}
       {deleteListingErrorMessage}
     </div>
