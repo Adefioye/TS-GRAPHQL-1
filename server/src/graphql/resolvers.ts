@@ -1,7 +1,7 @@
 // import { IResolvers } from "apollo-server-express";
 import { ObjectId, Query } from "mongoose";
-import { ListingType } from "../lib";
-import Listing from "../models/Listing";
+import { ListingType } from "../lib/types";
+import Listing from "../models/ListingModel";
 
 export const resolvers = {
   Query: {
